@@ -1,50 +1,50 @@
 
-Overview of StreamSpot:
+### Overview of StreamSpot:
 StreamSpot is designed for real-time anomaly detection in streaming heterogeneous graphs, with applications like detecting advanced persistent threats (APT). The approach handles temporal graphs with typed nodes and edges and maintains a memory-efficient representation of evolving graphs.
 
-Key Components of StreamSpot:
-Graph Representation:
+#### Key Components of StreamSpot:
+1. Graph Representation:
 
-Graphs are represented using shingle vectors, which are generated from the k-hop neighborhood of a node by traversing its outgoing edges. These shingles capture the local structure and the temporal order of edges.
-The similarity between two graphs is computed using cosine similarity between their shingle vectors.
-Shingle Sketching:
+- Graphs are represented using shingle vectors, which are generated from the k-hop neighborhood of a node by traversing its outgoing edges. These shingles capture the local structure and the temporal order of edges.
+- The similarity between two graphs is computed using cosine similarity between their shingle vectors.
+2. Shingle Sketching:
 
-Instead of storing the shingle vectors explicitly, StreamSpot constructs sketches of the graphs. Sketches are compact representations that approximate the pairwise similarities of graphs, providing memory efficiency.
-The sketches are updated dynamically as new edges arrive.
-StreamHash:
+- Instead of storing the shingle vectors explicitly, StreamSpot constructs sketches of the graphs. Sketches are compact representations that approximate the pairwise similarities of graphs, providing memory efficiency.
+- The sketches are updated dynamically as new edges arrive.
+3. StreamHash:
 
-StreamSpot introduces StreamHash to maintain a summary of graph representations online with constant-time updates and bounded memory consumption.
-StreamHash uses a family of hash functions that map shingles to {+1, -1}. These hash functions are chosen to be uniform and pairwise-independent.
-Each graph has a projection vector that is updated using these hash functions, allowing StreamSpot to compute the similarity of graphs based on their projection vectors.
-Clustering:
+- StreamSpot introduces StreamHash to maintain a summary of graph representations online with constant-time updates and bounded memory consumption.
+- StreamHash uses a family of hash functions that map shingles to {+1, -1}. These hash functions are chosen to be uniform and pairwise-independent.
+- Each graph has a projection vector that is updated using these hash functions, allowing StreamSpot to compute the similarity of graphs based on their projection vectors.
+4. Clustering:
 
-StreamSpot uses a centroid-based clustering approach to capture normal behavior. It maintains clusters of graphs based on their sketch similarities.
-New graphs are dynamically added to clusters or flagged as anomalies if they deviate significantly from the nearest cluster.
-Anomaly Detection:
+- StreamSpot uses a centroid-based clustering approach to capture normal behavior. It maintains clusters of graphs based on their sketch similarities.
+- New graphs are dynamically added to clusters or flagged as anomalies if they deviate significantly from the nearest cluster.
+5. Anomaly Detection:
 
-Anomalies are detected in real time by measuring the distance between a graph’s sketch and the nearest cluster centroid. If the distance exceeds a threshold, the graph is flagged as anomalous.
-Each cluster has an anomaly threshold set to 3 standard deviations greater than the mean distance between its graphs and the centroid.
-Time and Space Complexity:
+- Anomalies are detected in real time by measuring the distance between a graph’s sketch and the nearest cluster centroid. If the distance exceeds a threshold, the graph is flagged as anomalous.
+- Each cluster has an anomaly threshold set to 3 standard deviations greater than the mean distance between its graphs and the centroid.
+6. Time and Space Complexity:
 
-StreamSpot’s time complexity for updating a graph’s sketch is O(L + |s|²max) per edge, where L is the sketch length and |s|max is the maximum size of a shingle.
-The space complexity is O(cL + N), where c is the number of graphs, L is the sketch length, and N is the maximum number of edges retained in memory.
+- StreamSpot’s time complexity for updating a graph’s sketch is O(L + |s|²max) per edge, where L is the sketch length and |s|max is the maximum size of a shingle.
+- The space complexity is O(cL + N), where c is the number of graphs, L is the sketch length, and N is the maximum number of edges retained in memory.
 ​
 
 1. Maintaining Sketches Incrementally:
-When a new edge arrives, it modifies both the outgoing and incoming shingles of the graph.
-For each new shingle, the projection vector is updated by adding (for incoming shingle) or subtracting (for outgoing shingle) the corresponding hash value.
-The sketch is updated by checking if the projection vector changes sign after an update. If so, the corresponding bit in the sketch is flipped.
+- When a new edge arrives, it modifies both the outgoing and incoming shingles of the graph.
+- For each new shingle, the projection vector is updated by adding (for incoming shingle) or subtracting (for outgoing shingle) the corresponding hash value.
+- The sketch is updated by checking if the projection vector changes sign after an update. If so, the corresponding bit in the sketch is flipped.
 2. Clustering and Anomaly Detection:
-Initially, StreamSpot is bootstrapped using a training set of benign graphs, which are clustered using the K-medoids algorithm.
-New edges update the graph sketches in real-time, and the graph’s distance to each cluster centroid is computed.
-If the graph is close enough to a cluster centroid, it is assigned to that cluster. Otherwise, it is flagged as an anomaly.
-StreamSpot Evaluation:
-Datasets: The system was evaluated on flow-graphs derived from normal and attack scenarios. These graphs represent real-world system logs, where nodes are typed (e.g., process, file) and edges represent system calls (e.g., read, fork).
-Detection Performance: StreamSpot demonstrated high anomaly detection accuracy, even under strict memory constraints. The average precision of the system was over 90%, indicating effective ranking of anomalous graphs.
-Key Contributions of StreamSpot:
-Memory-Efficient Sketching: StreamSpot’s sketch-based representation enables memory-efficient handling of streaming heterogeneous graphs.
-Real-Time Clustering and Anomaly Detection: It maintains clusters dynamically and detects anomalies in real time.
-Scalable and Fast: StreamSpot processes over 100,000 edges per second, making it suitable for real-time applications with low latency requirements.
+- Initially, StreamSpot is bootstrapped using a training set of benign graphs, which are clustered using the K-medoids algorithm.
+- New edges update the graph sketches in real-time, and the graph’s distance to each cluster centroid is computed.
+- If the graph is close enough to a cluster centroid, it is assigned to that cluster. Otherwise, it is flagged as an anomaly.
+### StreamSpot Evaluation:
+- Datasets: The system was evaluated on flow-graphs derived from normal and attack scenarios. These graphs represent real-world system logs, where nodes are typed (e.g., process, file) and edges represent system calls (e.g., read, fork).
+- Detection Performance: StreamSpot demonstrated high anomaly detection accuracy, even under strict memory constraints. The average precision of the system was over 90%, indicating effective ranking of anomalous graphs.
+### Key Contributions of StreamSpot:
+- Memory-Efficient Sketching: StreamSpot’s sketch-based representation enables memory-efficient handling of streaming heterogeneous graphs.
+- Real-Time Clustering and Anomaly Detection: It maintains clusters dynamically and detects anomalies in real time.
+- Scalable and Fast: StreamSpot processes over 100,000 edges per second, making it suitable for real-time applications with low latency requirements.
 ### Problem Description:
 The primary problem StreamSpot addresses is **anomaly detection in streaming heterogeneous graphs**, which consist of multiple types of nodes and edges. This type of anomaly detection is particularly important in **Advanced Persistent Threat (APT)** detection at the host level. In this scenario, **system logs** capturing events like memory accesses and system calls are used to generate **information flow graphs**. These graphs, which evolve over time, must be monitored in real-time to detect abnormal behavior indicating malicious activity.
 
